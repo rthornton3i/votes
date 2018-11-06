@@ -1,29 +1,24 @@
 import scrape_functions as sf
-#import sys
+from math import ceil
+from time import sleep
+
+#number of votes per session
+yearStart = 2013
+yearEnd = 2018
+
+congressStart = ceil((yearStart-1788)/2)
+congressEnd = ceil((yearEnd-1788)/2) + 1
+
+for n in range(congressStart,congressEnd):
+    for m in range(1,3):
+        numVotes = sf.voteCheck(n,m)
+        numVotes = str(numVotes[:numVotes.find("(")-1])
 
 congress = 115
 session = 2
-voteNum = 189
+voteNum = 223
 
-dataLines = sf.scrapeStore(congress,session,voteNum)
-
-#if isinstance(dataLines, (bool)):
-#    print('Congress, session, or vote does not exist.\n')
-#    sys.exit()
-
-#vote counts
-searchTerm = 'Vote Counts'
-dataIndex = sf.lineSearch(searchTerm,dataLines,6)
-
-yeas = int(dataLines[dataIndex].strip())
-nays = int(dataLines[dataIndex + 9].strip())
-if 'Not Voting' in dataLines[dataIndex + 14]:
-    noVote = int(dataLines[dataIndex + 17].strip())
-else:
-    noVote = 0
-
-numVotes = sum((yeas,nays,noVote))
-print([yeas,nays,noVote])
+dataLines = sf.voteScrape(congress,session,voteNum)
 
 #vote results
 searchTerm = 'Alphabetical by Senator Name'
@@ -33,7 +28,7 @@ senator = []
 party = []
 state = []
 vote = []
-for n in range(numVotes):
+for n in range(100):
     senatorData = dataLines[dataIndex].strip().replace(',','')
     senatorName = senatorData[0:senatorData.find("(")-1]
     senatorParty = senatorData[senatorData.find("(")+1]
@@ -52,7 +47,7 @@ for n in range(numVotes):
 votes = list(zip(senator,party,state,vote))
 
 for line in votes:
-    if line[0] == 'Booker':
+    if line[0] == 'Murkowski':
         print(line)
         break
 
